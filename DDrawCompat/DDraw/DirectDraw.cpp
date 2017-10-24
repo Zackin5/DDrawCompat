@@ -97,6 +97,9 @@ namespace DDraw
 		DDSURFACEDESC2 dm = {};
 		dm.dwSize = sizeof(dm);
 		dd->GetDisplayMode(&dd, &dm);
+        // set custom resolution
+        dm.dwWidth = 1460;
+        dm.dwHeight = 1050;
 		return dm;
 	}
 

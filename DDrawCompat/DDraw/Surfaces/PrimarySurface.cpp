@@ -48,6 +48,7 @@ namespace DDraw
 
 		const DWORD origCaps = desc.ddsCaps.dwCaps;
 
+        // Setup init render surface
 		const auto& dm = DDraw::getDisplayMode(*CompatPtr<IDirectDraw7>::from(&dd));
 		desc.dwFlags |= DDSD_WIDTH | DDSD_HEIGHT | DDSD_PIXELFORMAT;
 		desc.dwWidth = dm.dwWidth;
@@ -55,7 +56,7 @@ namespace DDraw
 		desc.ddsCaps.dwCaps &= ~DDSCAPS_PRIMARYSURFACE;
 		desc.ddsCaps.dwCaps |= DDSCAPS_OFFSCREENPLAIN;
 		desc.ddpfPixelFormat = dm.ddpfPixelFormat;
-
+        
 		result = Surface::create(dd, desc, surface);
 		if (FAILED(result))
 		{

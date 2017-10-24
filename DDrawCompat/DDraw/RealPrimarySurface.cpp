@@ -70,7 +70,17 @@ namespace
 		}
 		else
 		{
-			result = SUCCEEDED(dest->Blt(&dest, nullptr, primary, nullptr, DDBLT_WAIT, nullptr));
+            // This is the logic used by B-17
+            LPDDSURFACEDESC2 surf;
+            primary->GetSurfaceDesc(primary, surf);
+            
+            //Compat::Log() << "surface resolution is " << surf->dwWidth << "x" << surf->dwHeight;
+            
+            // Calculate aspect correction
+            RECT* viewspace = new RECT{ (LONG)g_surfaceDesc.dwWidth - 1460, (LONG)g_surfaceDesc.dwHeight - 1050, 1460, 1050 };
+
+            // Draw game buffer to screen buffer
+			result = SUCCEEDED(dest->Blt(&dest, viewspace, primary, nullptr, DDBLT_WAIT, nullptr));
 		}
 
 		Compat::LogLeave("RealPrimarySurface::compatBlt", dest) << result;

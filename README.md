@@ -1,6 +1,10 @@
-# DDrawCompat
+# DDrawCompat for B-17 Flying Fortress: The Mighty 8th
 
 #### Introduction
+This is a fork of [Narzoul](https://github.com/narzoul)'s [DDrawCompat](https://github.com/narzoul/DDrawCompat) project but with modifications to benefit it's use with the game B-17 Flying Fortress: The Mighty 8th.
+
+Original Readme as follows:
+
 `DDrawCompat` is a DirectDraw wrapper aimed at fixing compatibility and performance issues with games based on DirectX 7 and below on newer versions of Windows (Vista/7/8/10).
 Games using DirectX 8 and above for rendering are not affected as they don't use `ddraw.dll`.
 
