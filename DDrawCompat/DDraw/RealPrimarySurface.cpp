@@ -102,7 +102,15 @@ namespace
                 drawHeight = (LONG)g_surfaceDescEngine.dwHeight;
             }
 
+            // size of letterboxed screen
             RECT* viewspace = new RECT{ deltaDWidth, deltaDHeight, drawWidth, drawHeight };
+
+            // Fill screen with black
+            DDBLTFX fillFX = {};
+            fillFX.dwSize = sizeof(DDBLTFX);
+            fillFX.dwFillColor = RGB(0, 0, 0);
+
+            dest->Blt(&dest, nullptr, nullptr, nullptr, DDBLT_COLORFILL | DDBLT_WAIT, &fillFX);
             
             // Draw game buffer to screen buffer
 			result = SUCCEEDED(dest->Blt(&dest, viewspace, primary, nullptr, DDBLT_WAIT, nullptr));
@@ -113,8 +121,8 @@ namespace
 
             // Constrain cursor position (I don't think this is supposed to be called each frame but it only seems to work here??)
             // Note: breaks B17's corner looping mouse stuff
-            RECT* cursorBox = new RECT{ 0, 0, drawWidth, drawHeight };
-            ClipCursor(cursorBox);
+            //RECT* cursorBox = new RECT{ 0, 0, drawWidth, drawHeight };
+            //ClipCursor(cursorBox);
 
             // Get cursor position and offset it for resolution
             GetCursorPos(mousePos);

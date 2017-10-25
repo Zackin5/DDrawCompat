@@ -51,6 +51,7 @@ namespace
 		return DDraw::DirectDraw<TDirectDraw>::s_origVtable.SetDisplayMode(This, width, height, bpp);
 	}
 
+    // Set the DirectDraw display resolution and etc
 	template <typename TDirectDraw>
 	HRESULT setDisplayMode(TDirectDraw* This, DWORD width, DWORD height, DWORD bpp,
 		DWORD refreshRate, DWORD flags)
