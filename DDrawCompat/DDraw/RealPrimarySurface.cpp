@@ -112,6 +112,7 @@ namespace
             RECT* cursorSize = new RECT{ 0, 0, 24, 24 };
 
             // Constrain cursor position (I don't think this is supposed to be called each frame but it only seems to work here??)
+            // Note: breaks B17's corner looping mouse stuff
             RECT* cursorBox = new RECT{ 0, 0, drawWidth, drawHeight };
             ClipCursor(cursorBox);
 
@@ -122,6 +123,7 @@ namespace
 
             // Draw cursor
             dest->BltFast(&dest, mousePos->x, mousePos->y, primary, cursorSize, DDBLTFAST_WAIT);
+            ShowCursor(false);  // Hide the cursor if B17 reshows it
 		}
 
 		Compat::LogLeave("RealPrimarySurface::compatBlt", dest) << result;
