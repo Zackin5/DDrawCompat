@@ -13,17 +13,21 @@ namespace
 	Win32::FontSmoothing::SystemSettings g_fontSmoothingSettings = {};
 	WNDPROC g_origDdWndProc = nullptr;
 
+    // Called when app is alt+tab to
 	void activateApp()
 	{
 		Gdi::enableEmulation();
 		Win32::FontSmoothing::setSystemSettings(g_fontSmoothingSettings);
+        ShowCursor(false);
 	}
 
+    // Called when app is alt+tab from
 	void deactivateApp()
 	{
 		Gdi::disableEmulation();
 		g_fontSmoothingSettings = Win32::FontSmoothing::getSystemSettings();
 		Win32::FontSmoothing::setSystemSettings(Win32::FontSmoothing::g_origSystemSettings);
+        ShowCursor(true);
 	}
 
 	LRESULT CALLBACK ddWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

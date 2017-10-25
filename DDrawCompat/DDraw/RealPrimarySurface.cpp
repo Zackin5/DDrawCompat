@@ -71,10 +71,6 @@ namespace
 		else
 		{
             // This is the logic used by B-17
-            LPDDSURFACEDESC2 surf;
-            primary->GetSurfaceDesc(primary, surf);
-            
-            //Compat::Log() << "surface resolution is " << surf->dwWidth << "x" << surf->dwHeight;
             
             // Calculate aspect correction
             RECT* viewspace = new RECT{ (LONG)g_surfaceDesc.dwWidth - 1460, (LONG)g_surfaceDesc.dwHeight - 1050, 1460, 1050 };
@@ -82,6 +78,17 @@ namespace
             // Draw game buffer to screen buffer
 			result = SUCCEEDED(dest->Blt(&dest, viewspace, primary, nullptr, DDBLT_WAIT, nullptr));
 		}
+
+        // Hacky accurate mouse cursor rendering
+        POINT* mousePos = new POINT{ 0,0 };
+        RECT* cursorSize = new RECT{ 0, 0, 24, 24 };
+
+        // Get cursor position and offset it for resolution
+        GetCursorPos(mousePos);
+        mousePos->x = mousePos->x * (1460.0 / (float)g_surfaceDesc.dwWidth) + 220;
+
+        // Draw cursor
+        dest->BltFast(&dest, mousePos->x, mousePos->y, primary, cursorSize, DDBLTFAST_WAIT);
 
 		Compat::LogLeave("RealPrimarySurface::compatBlt", dest) << result;
 		return result;
