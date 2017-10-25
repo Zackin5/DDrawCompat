@@ -50,7 +50,7 @@ namespace
 			Compat::Log() << "Finished installing hooks";
 
             // Init stuff for B-17, should prob be refactored into a new function at some point
-            ShowCursor(false);
+            //ShowCursor(false);
 
             isAlreadyInstalled = true;
 		}

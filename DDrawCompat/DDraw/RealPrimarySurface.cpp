@@ -25,6 +25,7 @@ namespace
 	CompatWeakPtr<IDirectDrawSurface7> g_paletteConverter;
 	CompatWeakPtr<IDirectDrawClipper> g_clipper;
 	DDSURFACEDESC2 g_surfaceDesc = {};
+    DDSURFACEDESC2 g_surfaceDescEngine = {};
 	DDraw::IReleaseNotifier g_releaseNotifier(onRelease);
 
 	bool g_stopUpdateThread = false;
@@ -70,25 +71,54 @@ namespace
 		}
 		else
 		{
-            // This is the logic used by B-17
+            // This is the logic used by B-17 //
             
             // Calculate aspect correction
-            RECT* viewspace = new RECT{ (LONG)g_surfaceDesc.dwWidth - 1460, (LONG)g_surfaceDesc.dwHeight - 1050, 1460, 1050 };
+            LONG deltaDWidth = (LONG)g_surfaceDesc.dwWidth - (LONG)g_surfaceDescEngine.dwWidth;
+            LONG deltaDHeight = (LONG)g_surfaceDesc.dwHeight - (LONG)g_surfaceDescEngine.dwHeight;
+            LONG drawWidth, drawHeight;
 
+            if (deltaDWidth < 0 || deltaDHeight < 0)
+            {
+                if ((LONG)g_surfaceDescEngine.dwWidth > (LONG)g_surfaceDescEngine.dwHeight)
+                {
+                    drawWidth = (LONG)g_surfaceDesc.dwWidth;
+                    drawHeight = (LONG)g_surfaceDescEngine.dwHeight * ((double)g_surfaceDesc.dwWidth / (double)g_surfaceDescEngine.dwWidth);
+                    deltaDWidth = 0;
+                    deltaDHeight = (LONG)g_surfaceDesc.dwHeight - drawHeight;
+                }
+                else
+                {
+                    drawWidth = (LONG)g_surfaceDescEngine.dwWidth * ((double)g_surfaceDesc.dwHeight / (double)g_surfaceDescEngine.dwHeight);
+                    drawHeight = (LONG)g_surfaceDesc.dwHeight;
+                    deltaDWidth = (LONG)g_surfaceDesc.dwWidth - drawWidth;
+                    deltaDHeight = 0;
+                }
+                Compat::Log() << drawWidth << "x" << drawHeight << " ++ " << deltaDWidth << "x" << deltaDHeight;
+            }
+            else
+            {
+                drawWidth = (LONG)g_surfaceDescEngine.dwWidth;
+                drawHeight = (LONG)g_surfaceDescEngine.dwHeight;
+            }
+
+            RECT* viewspace = new RECT{ deltaDWidth, deltaDHeight, drawWidth, drawHeight };
+            
             // Draw game buffer to screen buffer
 			result = SUCCEEDED(dest->Blt(&dest, viewspace, primary, nullptr, DDBLT_WAIT, nullptr));
+
+            // Ugly accurate mouse cursor rendering //
+            POINT* mousePos = new POINT{ 0,0 };
+            RECT* cursorSize = new RECT{ 0, 0, 24, 24 };
+
+            // Get cursor position and offset it for resolution
+            GetCursorPos(mousePos);
+            mousePos->x = mousePos->x * ((double)drawWidth / (double)g_surfaceDesc.dwWidth) + deltaDWidth;
+            mousePos->y = mousePos->y * ((double)drawHeight / (double)g_surfaceDesc.dwHeight) + deltaDHeight;
+
+            // Draw cursor
+            dest->BltFast(&dest, mousePos->x, mousePos->y, primary, cursorSize, DDBLTFAST_WAIT);
 		}
-
-        // Hacky accurate mouse cursor rendering
-        POINT* mousePos = new POINT{ 0,0 };
-        RECT* cursorSize = new RECT{ 0, 0, 24, 24 };
-
-        // Get cursor position and offset it for resolution
-        GetCursorPos(mousePos);
-        mousePos->x = mousePos->x * (1460.0 / (float)g_surfaceDesc.dwWidth) + 220;
-
-        // Draw cursor
-        dest->BltFast(&dest, mousePos->x, mousePos->y, primary, cursorSize, DDBLTFAST_WAIT);
 
 		Compat::LogLeave("RealPrimarySurface::compatBlt", dest) << result;
 		return result;
@@ -172,6 +202,7 @@ namespace
 		g_frontBuffer = surface.detach();
 		g_backBuffer = backBuffer;
 		g_surfaceDesc = desc;
+        g_surfaceDescEngine = DDraw::getDisplayMode(*CompatPtr<IDirectDraw7>::from(&dd));
 		g_isFullScreen = isFlippable;
 
 		return DD_OK;
