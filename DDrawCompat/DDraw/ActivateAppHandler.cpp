@@ -28,6 +28,7 @@ namespace
 		g_fontSmoothingSettings = Win32::FontSmoothing::getSystemSettings();
 		Win32::FontSmoothing::setSystemSettings(Win32::FontSmoothing::g_origSystemSettings);
         ShowCursor(true);
+        ClipCursor(NULL);
 	}
 
 	LRESULT CALLBACK ddWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

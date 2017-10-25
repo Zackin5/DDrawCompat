@@ -59,6 +59,7 @@ namespace
 		HRESULT result = DDraw::DirectDraw<TDirectDraw>::s_origVtable.SetDisplayMode(
 			This, width, height, bpp, refreshRate, flags);
 		Win32::DisplayMode::setDDrawBpp(0);
+        ShowCursor(false);
 		return result;
 	}
 }

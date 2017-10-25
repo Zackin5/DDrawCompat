@@ -48,10 +48,6 @@ namespace
 			Compat::Log() << "Installing display mode hooks";
 			Win32::DisplayMode::installHooks(g_origDDrawModule);
 			Compat::Log() << "Finished installing hooks";
-
-            // Init stuff for B-17, should prob be refactored into a new function at some point
-            //ShowCursor(false);
-
             isAlreadyInstalled = true;
 		}
 	}

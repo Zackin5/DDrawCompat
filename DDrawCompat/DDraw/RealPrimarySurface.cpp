@@ -78,6 +78,7 @@ namespace
             LONG deltaDHeight = (LONG)g_surfaceDesc.dwHeight - (LONG)g_surfaceDescEngine.dwHeight;
             LONG drawWidth, drawHeight;
 
+            // Handle aspects wider then monitor (this can probs be done better, revise in future)
             if (deltaDWidth < 0 || deltaDHeight < 0)
             {
                 if ((LONG)g_surfaceDescEngine.dwWidth > (LONG)g_surfaceDescEngine.dwHeight)
@@ -94,7 +95,6 @@ namespace
                     deltaDWidth = (LONG)g_surfaceDesc.dwWidth - drawWidth;
                     deltaDHeight = 0;
                 }
-                Compat::Log() << drawWidth << "x" << drawHeight << " ++ " << deltaDWidth << "x" << deltaDHeight;
             }
             else
             {
@@ -111,10 +111,14 @@ namespace
             POINT* mousePos = new POINT{ 0,0 };
             RECT* cursorSize = new RECT{ 0, 0, 24, 24 };
 
+            // Constrain cursor position (I don't think this is supposed to be called each frame but it only seems to work here??)
+            RECT* cursorBox = new RECT{ 0, 0, drawWidth, drawHeight };
+            ClipCursor(cursorBox);
+
             // Get cursor position and offset it for resolution
             GetCursorPos(mousePos);
-            mousePos->x = mousePos->x * ((double)drawWidth / (double)g_surfaceDesc.dwWidth) + deltaDWidth;
-            mousePos->y = mousePos->y * ((double)drawHeight / (double)g_surfaceDesc.dwHeight) + deltaDHeight;
+            mousePos->x = mousePos->x * (((double)drawWidth - deltaDWidth / 4.0) / (double)g_surfaceDesc.dwWidth) + deltaDWidth;
+            mousePos->y = mousePos->y * (((double)drawHeight - deltaDHeight / 4.0) / (double)g_surfaceDesc.dwHeight) + deltaDHeight;
 
             // Draw cursor
             dest->BltFast(&dest, mousePos->x, mousePos->y, primary, cursorSize, DDBLTFAST_WAIT);
